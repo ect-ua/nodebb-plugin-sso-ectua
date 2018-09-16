@@ -49,22 +49,22 @@
 	 */
 
 	var constants = Object.freeze({
-			type: '',	// Either 'oauth' or 'oauth2'
-			name: '',	// Something unique to your OAuth provider in lowercase, like "github", or "nodebb"
+			type: 'oauth',	// Either 'oauth' or 'oauth2'
+			name: 'forum',	// Something unique to your OAuth provider in lowercase, like "github", or "nodebb"
 			oauth: {
-				requestTokenURL: '',
-				accessTokenURL: '',
-				userAuthorizationURL: '',
+				requestTokenURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/token',
+				accessTokenURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/token',
+				userAuthorizationURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/auth',
 				consumerKey: nconf.get('oauth:key'),	// don't change this line
 				consumerSecret: nconf.get('oauth:secret'),	// don't change this line
 			},
 			oauth2: {
-				authorizationURL: '',
-				tokenURL: '',
+				authorizationURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/auth',
+				tokenURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/token',
 				clientID: nconf.get('oauth:id'),	// don't change this line
 				clientSecret: nconf.get('oauth:secret'),	// don't change this line
 			},
-			userRoute: ''	// This is the address to your app's "user profile" API endpoint (expects JSON)
+			userRoute: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/userinfo'	// This is the address to your app's "user profile" API endpoint (expects JSON)
 		}),
 		configOk = false,
 		OAuth = {}, passportOAuth, opts;
