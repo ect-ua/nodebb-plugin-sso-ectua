@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-sso-ectua",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "NodeBB ECT-UA SSO",
   "main": "library.js",
   "repository": {

@@ -111,13 +111,9 @@
 				opts.callbackURL = nconf.get('url') + '/auth/' + constants.name + '/callback';
 
 				passportOAuth.Strategy.prototype.userProfile = function(accessToken, done) {
-					console.log('accessToken', accessToken);
 					// Keycloak requires header authorization for GET Requests
 					this._oauth2._useAuthorizationHeaderForGET = true;
 					this._oauth2.get(constants.userRoute, accessToken, function(err, body, res) {
-						console.log('error', err);
-						console.log('body', body);
-						console.log('res', res);
 						if (err) { return done(new InternalOAuthError('failed to fetch user profile', err)); }
 
 						try {
@@ -173,7 +169,7 @@
 				name: constants.name,
 				url: '/auth/' + constants.name,
 				callbackURL: '/auth/' + constants.name + '/callback',
-				icon: 'fa-check-square',
+				icon: 'fa-sign-in-alt',
 				scope: (constants.scope || '').split(',')
 			});
 
@@ -189,7 +185,7 @@
 		// Everything else is optional.
 
 		// Find out what is available by uncommenting this line:
-		console.log('oauth', data);
+		// console.log('oauth', data);
 
 		var profile = {};
 		profile.id = data.sub;
