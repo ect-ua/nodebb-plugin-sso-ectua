@@ -61,6 +61,7 @@
 			oauth2: {
 				authorizationURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/auth',
 				tokenURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/token',
+				logoutURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/logout',
 				clientID: nconf.get('oauth:id'),	// don't change this line
 				clientSecret: nconf.get('oauth:secret'),	// don't change this line
 			},
@@ -315,6 +316,18 @@
 
     callback(null, params);
   };
+
+  /**
+   * Terminar sessão
+   * @param {any} payload contém parâmetro "next" para o próximo URL
+   */
+  OAuth.logout = function(payload) {
+	let tmpUrl = '';
+	if (payload && payload.next) {
+		tmpUrl = '?redirect_uri=' + encodeURI(payload.next);
+	}
+	payload.next = constants.oauth2.logoutURL;
+  }
 
 	module.exports = OAuth;
 }(module));

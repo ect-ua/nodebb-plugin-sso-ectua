@@ -7,6 +7,7 @@
 	"hooks": [
 		{ "hook": "static:user.delete", "method": "deleteUserData" },
 		{ "hook": "filter:user.whitelistFields", "method": "whitelistFields" },
-		{ "hook": "filter:auth.init", "method": "getStrategy" }
+		{ "hook": "filter:auth.init", "method": "getStrategy" },
+		{ "hook": "action:app.loggedOut", "method": "logout" }
 	]
 }
