@@ -1,11 +1,11 @@
 {
-  "name": "nodebb-plugin-sso-oauth",
-  "version": "0.3.3",
-  "description": "NodeBB Generic OAuth SSO",
+  "name": "nodebb-plugin-sso-ectua",
+  "version": "0.4.0",
+  "description": "NodeBB ECT-UA SSO",
   "main": "library.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/julianlam/nodebb-plugin-sso-oauth"
+    "url": "https://github.com/ect-ua/nodebb-plugin-sso-ectua"
   },
   "keywords": [
     "nodebb",
@@ -15,15 +15,18 @@
     "sso",
     "single sign on",
     "login",
-    "registration"
+    "registration",
+    "ect",
+    "ua",
+    "ect-ua"
   ],
   "author": {
-    "name": "Julian Lam",
-    "email": "julian@nodebb.org"
+    "name": "David Silva",
+    "email": "david@davidsilva.pt"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/julianlam/nodebb-plugin-sso-oauth/issues"
+    "url": "https://github.com/ect-ua/nodebb-plugin-sso-ectua/issues"
   },
   "readme": "",
   "readmeFilename": "README.md",
