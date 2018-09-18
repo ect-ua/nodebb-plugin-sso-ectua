@@ -49,8 +49,8 @@
 	 */
 
 	var constants = Object.freeze({
-			type: 'oauth',	// Either 'oauth' or 'oauth2'
-			name: 'forum',	// Something unique to your OAuth provider in lowercase, like "github", or "nodebb"
+			type: 'oauth2',	// Either 'oauth' or 'oauth2'
+			name: 'ectua',	// Something unique to your OAuth provider in lowercase, like "github", or "nodebb"
 			oauth: {
 				requestTokenURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/token',
 				accessTokenURL: 'https://idp.ect-ua.com/auth/realms/master/protocol/openid-connect/token',
@@ -111,7 +111,13 @@
 				opts.callbackURL = nconf.get('url') + '/auth/' + constants.name + '/callback';
 
 				passportOAuth.Strategy.prototype.userProfile = function(accessToken, done) {
+					console.log('accessToken', accessToken);
+					// Keycloak requires header authorization for GET Requests
+					this._oauth2._useAuthorizationHeaderForGET = true;
 					this._oauth2.get(constants.userRoute, accessToken, function(err, body, res) {
+						console.log('error', err);
+						console.log('body', body);
+						console.log('res', res);
 						if (err) { return done(new InternalOAuthError('failed to fetch user profile', err)); }
 
 						try {
@@ -131,12 +137,28 @@
 
 			opts.passReqToCallback = true;
 
+			
 			passport.use(constants.name, new passportOAuth(opts, function(req, token, secret, profile, done) {
+				/**
+					 * profile.id = data.sub;
+		profile.displayName = data.name;
+		profile.username = data.preferred_username;
+		profile.ano_matricula = data.ano_matricula;
+		profile.birthday = data.birthday;
+		profile.alumni = data.alumni;
+		profile.website = data.website;
+		profile.emails = [{ value: data.email }];
+		*/
 				OAuth.login({
 					oAuthid: profile.id,
-					handle: profile.displayName,
+					username: profile.username,
 					email: profile.emails[0].value,
-					isAdmin: profile.isAdmin
+					isAdmin: profile.isAdmin,
+					ano_matricula: profile.ano_matricula,
+					alumni: profile.alumni,
+					displayName: profile.displayName,
+					birthday: profile.birthday,
+					website: profile.website
 				}, function(err, user) {
 					if (err) {
 						return done(err);
@@ -167,19 +189,24 @@
 		// Everything else is optional.
 
 		// Find out what is available by uncommenting this line:
-		// console.log(data);
+		console.log('oauth', data);
 
 		var profile = {};
-		profile.id = data.id;
+		profile.id = data.sub;
 		profile.displayName = data.name;
+		profile.username = data.preferred_username;
+		profile.ano_matricula = data.ano_matricula;
+		profile.birthday = data.birthday;
+		profile.alumni = data.alumni;
+		profile.website = data.website;
 		profile.emails = [{ value: data.email }];
 
 		// Do you want to automatically make somebody an admin? This line might help you do that...
 		// profile.isAdmin = data.isAdmin ? true : false;
 
 		// Delete or comment out the next TWO (2) lines when you are ready to proceed
-		process.stdout.write('===\nAt this point, you\'ll need to customise the above section to id, displayName, and emails into the "profile" object.\n===');
-		return callback(new Error('Congrats! So far so good -- please see server log for details'));
+		// process.stdout.write('===\nAt this point, you\'ll need to customise the above section to id, displayName, and emails into the "profile" object.\n===');
+		// return callback(new Error('Congrats! So far so good -- please see server log for details'));
 
 		callback(null, profile);
 	}
@@ -201,6 +228,10 @@
 					// Save provider-specific information to the user
 					User.setUserField(uid, constants.name + 'Id', payload.oAuthid);
 					db.setObjectField(constants.name + 'Id:uid', payload.oAuthid, uid);
+					User.setUserField(uid, constants.name + 'AnoMatricula', payload.ano_matricula);
+					db.setObjectField(constants.name + 'AnoMatricula:uid', payload.ano_matricula, uid);
+					User.setUserField(uid, constants.name + 'Alumni', payload.alumni);
+					db.setObjectField(constants.name + 'Alumni:uid', payload.alumni, uid);
 
 					if (payload.isAdmin) {
 						Groups.join('administrators', uid, function(err) {
@@ -215,15 +246,29 @@
 					}
 				};
 
-				User.getUidByEmail(payload.email, function(err, uid) {
+				User.getUidByUsername(payload.username, function(err, uid) {
 					if(err) {
 						return callback(err);
 					}
 
+					/*
+					oAuthid: profile.id,
+					username: profile.username,
+					email: profile.emails[0].value,
+					isAdmin: profile.isAdmin,
+					ano_matricula: profile.ano_matricula,
+					alumni: profile.alumni,
+					displayName: profile.displayName,
+					birthday: profile.birthday,
+					website: profile.website
+					 */
 					if (!uid) {
 						User.create({
-							username: payload.handle,
-							email: payload.email
+							username: payload.username,
+							email: payload.email,
+							fullname: payload.displayName,
+							birthday: payload.birthday,
+							website: payload.website
 						}, function(err, uid) {
 							if(err) {
 								return callback(err);
@@ -253,6 +298,8 @@
 			async.apply(User.getUserField, data.uid, constants.name + 'Id'),
 			function(oAuthIdToDelete, next) {
 				db.deleteObjectField(constants.name + 'Id:uid', oAuthIdToDelete, next);
+				db.deleteObjectField(constants.name + 'AnoMatricula:uid', oAuthIdToDelete, next);
+				db.deleteObjectField(constants.name + 'Alumni:uid', oAuthIdToDelete, next);
 			}
 		], function(err) {
 			if (err) {
@@ -266,7 +313,10 @@
 
   // If this filter is not there, the deleteUserData function will fail when getting the oauthId for deletion.
   OAuth.whitelistFields = function(params, callback) {
-    params.whitelist.push(constants.name + 'Id');
+	params.whitelist.push(constants.name + 'Id');
+	params.whitelist.push(constants.name + 'AnoMatricula');
+	params.whitelist.push(constants.name + 'Alumni');
+
     callback(null, params);
   };
 

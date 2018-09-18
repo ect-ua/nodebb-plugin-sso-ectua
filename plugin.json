@@ -1,8 +1,8 @@
 {
-	"id": "nodebb-plugin-sso-oauth",
-	"name": "NodeBB OAuth SSO",
-	"description": "NodeBB Plugin that allows users to login/register via any configured OAuth provider.",
-	"url": "https://github.com/julianlam/nodebb-plugin-sso-oauth",
+	"id": "nodebb-plugin-sso-ectua",
+	"name": "NodeBB ECT-UA SSO",
+	"description": "Plugin para NodeBB que permite usar o IdP do ECT-UA para iniciar sessão.",
+	"url": "https://github.com/ect-ua/nodebb-plugin-sso-ectua",
 	"library": "./library.js",
 	"hooks": [
 		{ "hook": "static:user.delete", "method": "deleteUserData" },
