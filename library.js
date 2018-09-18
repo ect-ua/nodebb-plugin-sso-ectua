@@ -169,7 +169,7 @@
 				name: constants.name,
 				url: '/auth/' + constants.name,
 				callbackURL: '/auth/' + constants.name + '/callback',
-				icon: 'fa-sign-in-alt',
+				icon: 'fa-sign-in',
 				scope: (constants.scope || '').split(',')
 			});
 
